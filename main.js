@@ -37,33 +37,37 @@ async function getMessages() {
 		window.safeMutableDataEntries.forEach(
 			entriesHandle,
 			(key, value) => {
-				if (
-					uintToString(value.buf).length < 300 &&
-					uintToString(value.buf) !== '' &&
-					parseInt(uintToString(key)) < time &&
-					parseInt(uintToString(key)).toString().length === 13 &&
-					uintToString(key).length === 13
-				) {
-					let date = new Date(parseInt(uintToString(key)));
-					let timestamp =
-						('0' + date.getDate()).slice(-2) +
-						'/' +
-						('0' + (date.getMonth() + 1)).slice(-2) +
-						'/' +
-						date.getFullYear() +
-						' ' +
-						('0' + date.getHours()).slice(-2) +
-						':' +
-						('0' + date.getMinutes()).slice(-2);
+				// if (
+				// 	value.buf.toString().length < 300 &&
+				// 	value.buf.toString() !== '' &&
+				// 	parseInt(key.toString()) < time &&
+				// 	parseInt(key.toString()).toString().length === 13 &&
+				// 	key.toString().length === 13
+				// ) {
+				console.log(key);
+				i = key;
+				console.log(value.buf.toString());
 
-					$('#messages').append(
-						'<div class="card-panel accent-colour item"><p class="primary-text-colour">' +
-							uintToString(value.buf) +
-							' <br>' +
-							timestamp +
-							'</p></div>'
-					);
-				}
+				let date = new Date(parseInt(key.toString()));
+				let timestamp =
+					('0' + date.getDate()).slice(-2) +
+					'/' +
+					('0' + (date.getMonth() + 1)).slice(-2) +
+					'/' +
+					date.getFullYear() +
+					' ' +
+					('0' + date.getHours()).slice(-2) +
+					':' +
+					('0' + date.getMinutes()).slice(-2);
+
+				$('#messages').append(
+					'<div class="card-panel accent-colour item"><p class="primary-text-colour">' +
+						value.buf.toString() +
+						' <br>' +
+						timestamp +
+						'</p></div>'
+				);
+				// }
 				window.scrollTo(0, document.body.scrollHeight);
 			},
 			err => {
@@ -71,7 +75,6 @@ async function getMessages() {
 			}
 		);
 		window.safeMutableDataEntries.free(entriesHandle);
-		window.safeMutableData.free(feedyHandle);
 	} catch (err) {
 		console.error(err);
 	}
@@ -103,7 +106,7 @@ async function authorise() {
 			auth = authorisedAppHandle;
 			authorised = true;
 			Materialize.toast('Authorised App Token: ' + auth, 3000, 'rounded');
-			getConfig();
+			getMessages();
 			return auth;
 		}
 	} catch (err) {
@@ -135,14 +138,4 @@ async function sendMessage() {
 			getMessages();
 		}, 2000);
 	}
-}
-
-function uintToString(uintArray) {
-	return new TextDecoder('utf-8')
-		.decode(uintArray)
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;')
-		.replace(/'/g, '&#039;');
 }
