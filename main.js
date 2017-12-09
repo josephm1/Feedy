@@ -36,38 +36,37 @@ async function getMessages() {
 
 		window.safeMutableDataEntries.forEach(
 			entriesHandle,
-			(key, value) => {
-				// if (
-				// 	value.buf.toString().length < 300 &&
-				// 	value.buf.toString() !== '' &&
-				// 	parseInt(key.toString()) < time &&
-				// 	parseInt(key.toString()).toString().length === 13 &&
-				// 	key.toString().length === 13
-				// ) {
-				console.log(key);
-				i = key;
-				console.log(value.buf.toString());
+			(keysobject, value) => {
+				let key = uintToString(keysobject);
+				if (
+					value.buf.toString().length < 300 &&
+					value.buf.toString() !== '' &&
+					parseInt(key) < time &&
+					parseInt(key).toString().length === 13
+					// key.length === 13
+				) {
+					console.log(value.buf.toString());
+					i = key;
+					let date = new Date(parseInt(key));
+					let timestamp =
+						('0' + date.getDate()).slice(-2) +
+						'/' +
+						('0' + (date.getMonth() + 1)).slice(-2) +
+						'/' +
+						date.getFullYear() +
+						' ' +
+						('0' + date.getHours()).slice(-2) +
+						':' +
+						('0' + date.getMinutes()).slice(-2);
 
-				let date = new Date(parseInt(key.toString()));
-				let timestamp =
-					('0' + date.getDate()).slice(-2) +
-					'/' +
-					('0' + (date.getMonth() + 1)).slice(-2) +
-					'/' +
-					date.getFullYear() +
-					' ' +
-					('0' + date.getHours()).slice(-2) +
-					':' +
-					('0' + date.getMinutes()).slice(-2);
-
-				$('#messages').append(
-					'<div class="card-panel accent-colour item"><p class="primary-text-colour">' +
-						value.buf.toString() +
-						' <br>' +
-						timestamp +
-						'</p></div>'
-				);
-				// }
+					$('#messages').append(
+						'<div class="card-panel accent-colour item"><p class="primary-text-colour">' +
+							value.buf.toString() +
+							' <br>' +
+							timestamp +
+							'</p></div>'
+					);
+				}
 				window.scrollTo(0, document.body.scrollHeight);
 			},
 			err => {
@@ -138,4 +137,9 @@ async function sendMessage() {
 			getMessages();
 		}, 2000);
 	}
+}
+
+function uintToString(key) {
+	let uintArray = new Uint8Array(Object.values(key));
+	return new TextDecoder('utf-8').decode(uintArray);
 }
